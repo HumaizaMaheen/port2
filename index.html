@@ -1437,7 +1437,8 @@ const REEL = [
   {title:"SHADOW UNBOUND", tag:"EDIT — ANIME EDITS", dur:"02:45", hue:15, youtubeId:"IhYtTDLWZJQ"},
   {title:"VALORANT PULSE", tag:"EDIT — GAME EDITS", dur:"02:50", hue:195, youtubeId:"JLFKJSwdbNk"},
   {title:"CINEMATIC VISIONS", tag:"EDIT — MOVIE EDITS", dur:"04:12", hue:220, youtubeId:"lBaPWXBTYSg"},
-  {title:"NEON OVERDRIVE", tag:"EDIT — ANIME EDITS", dur:"03:05", hue:330, youtubeId:"sS2Zhje7yTU"}
+  {title:"NEON OVERDRIVE", tag:"EDIT — ANIME EDITS", dur:"03:05", hue:330, youtubeId:"sS2Zhje7yTU"},
+  {title:"COMMANDER ERWIN SMITH", tag:"EDIT — ANIME EDITS", dur:"03:20", hue:200, youtubeId:"sv0msBBdT_w", embedUrl:"https://www.youtube.com/embed/sv0msBBdT_w?si=A1ith-KH9XPuRQJQ&autoplay=1"}
 ];
 const STILLS = [
   {title:"FIELD NOTES", tag:"GAME EDITS — 12 FRAMES", dur:"2024", hue:35},
@@ -2417,7 +2418,7 @@ let playerA = null;
 let playerB = null;
 let activePlayerIndex = 0; // 0 for A, 1 for B
 
-function loadYouTubePlayer(videoId, startSeconds = 0) {
+function loadYouTubePlayer(videoId, startSeconds = 0, customEmbedUrl = null) {
   const wrapA = document.getElementById('scrYtWrap');
   const wrapB = document.getElementById('scrYtWrapNext');
   if (!wrapA || !wrapB) return;
@@ -2432,6 +2433,14 @@ function loadYouTubePlayer(videoId, startSeconds = 0) {
   targetWrap.style.transition = 'opacity 0.6s cubic-bezier(.4,0,.2,1)';
   targetWrap.style.zIndex = '3';
   currentWrap.style.zIndex = '2';
+
+  if (customEmbedUrl) {
+    targetWrap.innerHTML = `<iframe src="${customEmbedUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position:absolute; top:50%; left:50%; width:100vw; height:100vh; min-width:177.77vh; min-height:56.25vw; transform:translate(-50%,-50%); border:none;"></iframe>`;
+    targetWrap.style.opacity = '1';
+    currentWrap.style.opacity = '0';
+    activePlayerIndex = activePlayerIndex === 0 ? 1 : 0;
+    return;
+  }
 
   let currentPlayerObj = activePlayerIndex === 0 ? playerB : playerA;
 
@@ -2689,8 +2698,8 @@ function openScreening(i, skipCountdown = false, startSeconds = 0){
   if(ytWrap){
     if(item.videoUrl){
       loadLocalVideoPlayer(item.videoUrl);
-    } else if(item.youtubeId){
-      loadYouTubePlayer(item.youtubeId, startSeconds);
+    } else if(item.youtubeId || item.embedUrl){
+      loadYouTubePlayer(item.youtubeId, startSeconds, item.embedUrl);
     } else if(item.instagramId || item.instagramUrl){
       const igId = item.instagramId || extractInstagramId(item.instagramUrl);
       loadInstagramPlayer(igId, item.rotate);
